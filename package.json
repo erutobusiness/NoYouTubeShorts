@@ -1,0 +1,22 @@
+{
+  "name": "noyoutubeshorts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint:code": "biome lint ./",
+    "lint:style": "biome format ./",
+    "fix:style": "biome format --write ./",
+    "fix:code": "biome lint --apply ./"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.6.4",
+    "@types/chrome": "^0.0.266",
+    "biome": "^0.2.2",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
+  }
+}

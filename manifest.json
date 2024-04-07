@@ -1,0 +1,13 @@
+{
+    "manifest_version": 2,
+    "name": "NoYouTubeShorts",
+    "version": "1.0",
+    "description": "Don't Watch YouTubeShorts!",
+    "permissions": ["activeTab"],
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["./dist/content.js"]
+        }
+    ]
+}
