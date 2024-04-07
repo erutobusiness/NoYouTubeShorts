@@ -6,7 +6,18 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"all": true,
+			"style": {
+				"useNamingConvention": "off"
+			}
 		}
+	},
+	"formatter": {
+		"enabled": true,
+		"formatWithErrors": true,
+		"indentStyle": "tab",
+		"indentWidth": 4,
+		"lineWidth": 80,
+		"ignore": ["public/*", "node_modules/*", "dist/*"]
 	}
 }

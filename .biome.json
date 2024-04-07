@@ -1,7 +1,0 @@
-{
-    "extends": "@biome/toolkit",
-    "ignore": [
-      "dist",
-      "node_modules"
-    ]
-  }
