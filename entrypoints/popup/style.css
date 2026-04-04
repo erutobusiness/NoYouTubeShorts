@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+	--color-primary: #ef4444;
+	--color-primary-hover: #dc2626;
+	--color-success: #22c55e;
+	--color-success-hover: #16a34a;
+	--color-bg: #0f0f0f;
+	--color-surface: #1a1a1a;
+	--color-surface-hover: #262626;
+	--color-text: #f1f1f1;
+	--color-text-muted: #aaaaaa;
+}
+
+body {
+	width: 320px;
+	min-height: 200px;
+	margin: 0;
+	background-color: var(--color-bg);
+	color: var(--color-text);
+	font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
