@@ -1,0 +1,91 @@
+:root {
+	color-scheme: light dark;
+	--bg: #ffffff;
+	--fg: #1a1a1a;
+	--muted: #5c5c5c;
+	--line: #e0e0e0;
+	--accent: #c00;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg: #212121;
+		--fg: #f1f1f1;
+		--muted: #aaaaaa;
+		--line: #3c3c3c;
+		--accent: #ff4e45;
+	}
+}
+
+body {
+	margin: 0;
+	background: var(--bg);
+	color: var(--fg);
+	font-family:
+		system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN",
+		"Noto Sans JP", sans-serif;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+#app {
+	width: 20rem;
+	padding: 0.75rem 1rem 1rem;
+	box-sizing: border-box;
+}
+
+h1 {
+	margin: 0 0 0.75rem;
+	padding-bottom: 0.5rem;
+	border-bottom: 2px solid var(--accent);
+	font-size: 1rem;
+	letter-spacing: 0.02em;
+}
+
+#settings {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#settings li {
+	padding: 0.5rem 0;
+	border-bottom: 1px solid var(--line);
+}
+
+#settings li:last-child {
+	border-bottom: none;
+}
+
+label {
+	display: flex;
+	gap: 0.6rem;
+	align-items: flex-start;
+	cursor: pointer;
+}
+
+input[type="checkbox"] {
+	/* Line it up with the first line of the label rather than the block. */
+	margin: 0.2rem 0 0;
+	width: 1rem;
+	height: 1rem;
+	accent-color: var(--accent);
+	flex: none;
+}
+
+.label-text {
+	flex: 1;
+}
+
+.note {
+	margin: 0.15rem 0 0 1.6rem;
+	color: var(--muted);
+	font-size: 0.8125rem;
+}
+
+#status {
+	margin: 0.75rem 0 0;
+	min-height: 1.25rem;
+	color: var(--muted);
+	font-size: 0.8125rem;
+}
