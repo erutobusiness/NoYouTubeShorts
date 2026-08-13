@@ -1,5 +1,8 @@
 {
 	"$schema": "https://biomejs.dev/schemas/1.6.4/schema.json",
+	"files": {
+		"ignore": ["dist/**", "public/**", "node_modules/**"]
+	},
 	"organizeImports": {
 		"enabled": true
 	},
@@ -17,7 +20,9 @@
 		"formatWithErrors": true,
 		"indentStyle": "tab",
 		"indentWidth": 4,
-		"lineWidth": 80,
-		"ignore": ["public/*", "node_modules/*", "dist/*"]
+		"lineWidth": 80
+	},
+	"javascript": {
+		"globals": ["chrome"]
 	}
 }
