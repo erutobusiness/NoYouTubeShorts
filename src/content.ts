@@ -61,21 +61,88 @@ function buildCss(settings: Settings): string {
 }
 
 function applySettings(settings: Settings): void {
+	// At document_start the root element can still be missing. Wait for it
+	// rather than throwing, which would take the redirect down with it.
+	const root = document.documentElement;
+	if (!root) {
+		document.addEventListener(
+			"DOMContentLoaded",
+			() => applySettings(settings),
+			{
+				once: true,
+			},
+		);
+		return;
+	}
 	let style = document.getElementById(STYLE_ELEMENT_ID);
 	if (!style) {
 		style = document.createElement("style");
 		style.id = STYLE_ELEMENT_ID;
-		// documentElement, not head: the content script can run before <head>
-		// exists, and appending to the root works either way.
-		document.documentElement.appendChild(style);
+		root.appendChild(style);
 	}
 	style.textContent = buildCss(settings);
 }
 
-loadSettings().then(applySettings);
+const REDIRECT_URL = "https://www.youtube.com/";
+
+/** True for a Shorts watch path. `/shortstories` must not match. */
+function isShortsPath(pathname: string): boolean {
+	return pathname === "/shorts" || pathname.startsWith("/shorts/");
+}
+
+/**
+ * Set once a redirect has been asked for.
+ *
+ * ⚠ Without this the extension deadlocks. Calling `location.replace` starts a
+ * navigation, which fires the `navigate` event, which called this function
+ * again, which restarted the navigation — measured at 6653 restarts in ten
+ * seconds, with the URL never leaving the Short.
+ */
+let redirecting = false;
+
+function redirectIfShorts(settings: Settings): void {
+	if (redirecting) return;
+	if (!settings.redirectShorts) return;
+	if (!isShortsPath(window.location.pathname)) return;
+	redirecting = true;
+	// `replace`, not `assign`: the Short must not sit in the back history, or
+	// pressing Back walks straight into it again.
+	window.location.replace(REDIRECT_URL);
+}
+
+let current: Settings | undefined;
+
+function apply(settings: Settings): void {
+	current = settings;
+	// Redirect first. It needs no DOM, and leaving it after the style injection
+	// meant any failure there (a missing root at document_start) silently took
+	// the redirect with it.
+	redirectIfShorts(settings);
+	applySettings(settings);
+}
+
+loadSettings().then(apply);
 
 // Re-apply when the popup toggles something, so the page updates without a reload.
 chrome.storage.onChanged.addListener((_changes, area) => {
 	if (area !== "sync") return;
-	loadSettings().then(applySettings);
+	loadSettings().then(apply);
 });
+
+// YouTube is a single-page app: opening a Short from inside the site changes the
+// URL without reloading the document, so a listener on the extension's service
+// worker never sees it. Measured on the live site: `navigation` fires, YouTube's
+// own `yt-navigate-finish` fires, `popstate` and a patched `pushState` do not.
+// The standard API is the primary hook; YouTube's event is kept as a fallback in
+// case the site ships in a browser without it.
+function onSoftNavigation(): void {
+	if (current) redirectIfShorts(current);
+}
+
+if (window.navigation) {
+	window.navigation.addEventListener("navigate", () => {
+		// The event fires before location updates, so check on the next turn.
+		queueMicrotask(onSoftNavigation);
+	});
+}
+document.addEventListener("yt-navigate-finish", onSoftNavigation);

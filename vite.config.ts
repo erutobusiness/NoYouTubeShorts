@@ -7,9 +7,12 @@ const manifest = defineManifest({
 	version: "0.1.0",
 	description:
 		"YouTube の Shorts への導線を隠し、Shorts を開いたら通常の YouTube へ戻す",
-	// `storage` holds the per-feature switches; `tabs` is what the redirect needs
-	// to see the URL of the active tab.
-	permissions: ["tabs", "storage"],
+	// Only `storage`, for the per-feature switches. The redirect used to need
+	// `tabs` so a service worker could read the active tab's URL, but that also
+	// missed every in-site navigation (YouTube is a single-page app) and showed
+	// users a "read your browsing history" warning. Doing it in the content
+	// script fixes both.
+	permissions: ["storage"],
 	action: {
 		default_popup: "index.html",
 		default_title: "NoYouTubeShorts",
@@ -23,10 +26,6 @@ const manifest = defineManifest({
 			run_at: "document_start",
 		},
 	],
-	background: {
-		service_worker: "src/background.ts",
-		type: "module",
-	},
 });
 
 // biome-ignore lint/style/noDefaultExport: Vite requires the config as a default export
