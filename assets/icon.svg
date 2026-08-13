@@ -1,0 +1,31 @@
+<!--
+  Source of truth for the extension icons. Rendered to PNG at 16/32/48/128 by
+  scripts/make-icons.mjs.
+
+  Deliberately NOT the YouTube Shorts logo: that mark belongs to Google, and
+  shipping it would be a trademark problem and a likely store rejection. This is
+  a generic portrait-video shape with a slash through it, which reads the same
+  ("no short-form video") without borrowing anyone's identity.
+
+  Drawn to survive 16px: one background, one shape, one slash. Nothing thinner
+  than 1/16 of the canvas.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect width="128" height="128" rx="28" fill="#c00000" />
+
+  <!-- Portrait frame: the shape short-form video is always presented in. -->
+  <g fill="none" stroke="#ffffff" stroke-width="9" stroke-linejoin="round">
+    <rect x="42" y="26" width="44" height="76" rx="10" />
+  </g>
+
+  <!-- Play triangle, so the frame reads as video rather than as a phone. -->
+  <path d="M58 52 L58 76 L78 64 Z" fill="#ffffff" />
+
+  <!--
+    The slash is drawn twice: a wider background-coloured stroke underneath cuts
+    a clean gap out of the frame, so the line stays readable at 16px instead of
+    blurring into the shape it crosses.
+  -->
+  <line x1="26" y1="104" x2="102" y2="24" stroke="#c00000" stroke-width="26" stroke-linecap="round" />
+  <line x1="26" y1="104" x2="102" y2="24" stroke="#ffffff" stroke-width="11" stroke-linecap="round" />
+</svg>

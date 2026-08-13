@@ -13,9 +13,24 @@ const manifest = defineManifest({
 	// users a "read your browsing history" warning. Doing it in the content
 	// script fixes both.
 	permissions: ["storage"],
+	// Rendered from assets/icon.svg by scripts/make-icons.mjs. 128 is what the
+	// store listing shows; the smaller sizes are for the toolbar and the
+	// extensions page.
+	icons: {
+		16: "icons/icon-16.png",
+		32: "icons/icon-32.png",
+		48: "icons/icon-48.png",
+		128: "icons/icon-128.png",
+	},
 	action: {
 		default_popup: "index.html",
 		default_title: "NoYouTubeShorts",
+		default_icon: {
+			16: "icons/icon-16.png",
+			32: "icons/icon-32.png",
+			48: "icons/icon-48.png",
+			128: "icons/icon-128.png",
+		},
 	},
 	content_scripts: [
 		{
