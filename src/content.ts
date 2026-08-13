@@ -13,18 +13,36 @@ import { type Settings, loadSettings } from "./settings";
 
 const STYLE_ELEMENT_ID = "no-youtube-shorts-style";
 
+/** Marker this script puts on guide entries it has identified as Shorts. */
+const SHORTS_ENTRY_ATTR = "data-nys-shorts-entry";
+/** Set on entries already looked at, so the scan never re-examines them. */
+const SCANNED_ATTR = "data-nys-scanned";
+
+/**
+ * Start of the `d` attribute of the Shorts icon.
+ *
+ * ⚠ The expanded guide renders its Shorts entry as an `<a>` **with no href**, so
+ * matching on the link misses it — only the collapsed mini guide carries
+ * `href="/shorts/"`. The visible label is translated, so that is no good either.
+ * Measured across all 18 guide entries, the icon path is the only handle that is
+ * both language-independent and unique to Shorts. A prefix is used so a small
+ * tweak to the tail of the shape does not break the match.
+ */
+const SHORTS_ICON_PATH_PREFIX = "m13.467 1.19";
+
 /**
  * One CSS block per switch. Selector lists are deliberately a bit wide: YouTube
  * renames custom elements over time, and an extra selector that matches nothing
  * costs nothing.
  */
 const RULES: Record<keyof Settings, string> = {
-	// Handled by the service worker, not by CSS.
+	// Handled by the redirect below, not by CSS.
 	redirectShorts: "",
 
 	hideSidebarLink: `
 		ytd-guide-entry-renderer:has(a[href^="/shorts"]),
-		ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]) { display: none !important; }
+		ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]),
+		[${SHORTS_ENTRY_ATTR}] { display: none !important; }
 	`,
 
 	hideHomeShelf: `
@@ -128,6 +146,61 @@ chrome.storage.onChanged.addListener((_changes, area) => {
 	if (area !== "sync") return;
 	loadSettings().then(apply);
 });
+
+/**
+ * Tag guide entries whose icon is the Shorts logo.
+ *
+ * Tagging is unconditional; whether the tag hides anything is left to the CSS,
+ * so flipping the switch off in the popup takes effect without undoing this.
+ */
+function tagShortsGuideEntries(): void {
+	const entries = document.querySelectorAll(
+		`ytd-guide-entry-renderer:not([${SCANNED_ATTR}]), ytd-mini-guide-entry-renderer:not([${SCANNED_ATTR}])`,
+	);
+	for (const entry of entries) {
+		const d = entry.querySelector("svg path")?.getAttribute("d");
+		// ⚠ Do not mark it scanned yet when there is no icon. The entry element
+		// is created before its icon is drawn, and marking it here meant the
+		// first look — which sees no path — was also the last one, leaving the
+		// expanded guide's Shorts entry permanently untagged and visible.
+		if (d === undefined || d === null) continue;
+		entry.setAttribute(SCANNED_ATTR, "");
+		if (d.startsWith(SHORTS_ICON_PATH_PREFIX)) {
+			entry.setAttribute(SHORTS_ENTRY_ATTR, "");
+		}
+	}
+}
+
+/**
+ * The guide is built the first time it is opened, so a one-off scan is not
+ * enough. This watches for it — narrowly: the query above only ever looks at
+ * entries it has not seen, and the callback is coalesced into one run per frame,
+ * so this does not turn into a fight with YouTube's re-rendering.
+ */
+function watchForGuide(): void {
+	let queued = false;
+	const observer = new MutationObserver(() => {
+		if (queued) return;
+		queued = true;
+		requestAnimationFrame(() => {
+			queued = false;
+			tagShortsGuideEntries();
+		});
+	});
+	observer.observe(document.documentElement, {
+		childList: true,
+		subtree: true,
+	});
+	tagShortsGuideEntries();
+}
+
+if (document.documentElement) {
+	watchForGuide();
+} else {
+	document.addEventListener("DOMContentLoaded", watchForGuide, {
+		once: true,
+	});
+}
 
 // YouTube is a single-page app: opening a Short from inside the site changes the
 // URL without reloading the document, so a listener on the extension's service
