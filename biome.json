@@ -1,15 +1,23 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.6.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.5.8/schema.json",
 	"files": {
-		"ignore": ["dist/**", "public/**", "node_modules/**"]
+		"includes": [
+			"**",
+			"!**/dist/**",
+			"!**/public/**",
+			"!**/node_modules/**"
+		]
 	},
-	"organizeImports": {
-		"enabled": true
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"all": true,
 			"style": {
 				"useNamingConvention": "off"
 			}

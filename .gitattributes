@@ -1,0 +1,4 @@
+# Biome formats with LF. Without this, a checkout on Windows (core.autocrlf=true
+# by default) rewrites every file to CRLF and `npm run lint:style` fails there
+# while CI on Linux stays green.
+* text=auto eol=lf
