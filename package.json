@@ -15,7 +15,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.8",
 		"@crxjs/vite-plugin": "^2.7.1",
-		"@types/chrome": "^0.2.5",
+		"@types/chrome": "^0.2.6",
 		"typescript": "^7.0.2",
 		"vite": "^8.0.0"
 	}
